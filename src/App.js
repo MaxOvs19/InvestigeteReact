@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import '../src/styles/App.css';
 import PostList from './components/PostList';
+import MyButton from './components/UI/button/MyButton';
 
 function App() {
   const [posts, setpost] = useState([
@@ -15,7 +16,7 @@ function App() {
       <form>
         <input type="text" placeholder="Название поста" />
         <input type="text" placeholder="Описание" />
-        <button>Create post</button>
+        <MyButton text="Create" />
       </form>
       <PostList posts={posts} title="Список постов" />
     </div>
