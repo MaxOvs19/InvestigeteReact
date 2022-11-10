@@ -1,19 +1,25 @@
 import React, { useState } from 'react';
+import MyButton from './UI/button/MyButton';
 
 const PostItem = (props) => {
-  console.log(props);
   return (
     <div>
       <div className="post">
         <div className="post__block">
           <strong>
-            {props.post.id} {props.post.title}
+            {props.number} {props.post.title}
           </strong>
           <div>{props.post.body}</div>
         </div>
 
         <div className="post__btn">
-          <button>Delite</button>
+          <MyButton
+            onClick={() => {
+              props.remove(props.post);
+            }}
+          >
+            Delite
+          </MyButton>
         </div>
       </div>
     </div>
