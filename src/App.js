@@ -7,12 +7,25 @@ import MyModal from './components/UI/modal/MyModal';
 import MyButton from './components/UI/button/MyButton';
 import { usePosts } from './hooks/usePosts';
 import PostService from './API/PostService';
+import Loader from './components/UI/loader/Loader';
+import { useFetching } from './hooks/useFetching';
+import { getPageCount } from './components/utils/pages';
 
 function App() {
   const [posts, setPost] = useState([]);
 
   const [filter, setFilter] = useState({ sort: '', query: '' });
   const [modal, setModal] = useState(false);
+  const [totalPage, setTotalPage] = useState(0);
+  const [limit, setLimit] = useState(10);
+  const [page, setPage] = useState(1);
+
+  const [fetchPost, isPostsLoading, postError] = useFetching(async () => {
+    const responce = await PostService.getAll(limit, page);
+    setPost(responce.data);
+    const totalCount = responce.headers['x-total-count'];
+    setTotalPage(getPageCount(totalCount, limit));
+  });
   const sortedSearchPost = usePosts(posts, filter.sort, filter.query);
 
   const createPost = (newPost) => {
@@ -23,11 +36,6 @@ function App() {
   const removePost = (post) => {
     setPost(posts.filter((p) => p.id !== post.id));
   };
-
-  async function fetchPost() {
-    const post = await PostService.getAll();
-    setPost(post);
-  }
 
   useEffect(() => {
     fetchPost();
@@ -47,7 +55,14 @@ function App() {
       <hr style={{ margin: '15px' }} />
       <PostFilter filter={filter} setFilter={setFilter} />
 
-      <PostList remove={removePost} posts={sortedSearchPost} />
+      {postError && <h1>Error! ${postError}</h1>}
+      {isPostsLoading ? (
+        <div style={{ display: 'flex', justifyContent: 'center', marginTop: '50px' }}>
+          <Loader />{' '}
+        </div>
+      ) : (
+        <PostList remove={removePost} posts={sortedSearchPost} />
+      )}
     </div>
   );
 }
